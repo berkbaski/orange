@@ -130,7 +130,7 @@ jobs:
           draft: false
           prerelease: true
           body: |
-            [Changelog](https://github.com/${{github.repository}}/blob/${{ steps.extract_branch.outputs.branch }}/CHANGELOG.md)
+            [Changelog2](https://github.com/${{github.repository}}/blob/${{ steps.extract_branch.outputs.branch }}/CHANGELOG.md)
 #           [Release Notes](https://github.com/${{github.repository}}/blob/${{ steps.extract_branch.outputs.branch }}/release-notes/${{env.buildNumber}}.md)
 
       - name: Upload Release Asset
