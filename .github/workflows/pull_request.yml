@@ -9,19 +9,45 @@ jobs:
           echo "::set-env name=PATH::${PATH}:${HOME}/.dotnet/tools"
           dotnet tool install -g dotnet-format
 
+      - name: Get branch info
+        run: echo "##[set-output name=ref;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: comment-branch
+
       - name: Checkout repo
         uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.comment-branch.outputs.ref }}
+          persist-credentials: false
+
+      # - name: Add dotnet-format problem matcher
+      #   uses: xt0rted/dotnet-format-problem-matcher@v1
+
+      # - name: Run dotnet format
+      #   uses: xt0rted/dotnet-format@v1
+      #   with:
+      #     repo-token: ${{ secrets.GITHUB_TOKEN }}
+      #     only-changed-files: "true"
 
       - name: Run dotnet format
+        id: format
         uses: xt0rted/dotnet-format@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          only-changed-files: "true"
+          only-changed-files: true
+          action: "fix"
 
-      - name: Debug details
-        if: failure()
-        shell: pwsh
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+      - name: Commit files
+        if: steps.format.outputs.has-changes == 'true'
         run: |
-          echo ${env:PATH}
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -a -m 'Automated dotnet-format update
+
+          Co-authored-by: ${{ github.event.comment.user.login }} <${{ github.event.comment.user.id }}+${{ github.event.comment.user.login }}@users.noreply.github.com>'
+
+      - name: Push changes
+        if: steps.format.outputs.has-changes == 'true'
+        uses: ad-m/github-push-action@v0.5.0
+        with:
+          branch: ${{ steps.comment-branch.outputs.ref }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
