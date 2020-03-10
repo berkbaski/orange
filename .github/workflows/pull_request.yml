@@ -18,3 +18,26 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           only-changed-files: "true"
+
+      - name: Debug details
+        if: failure()
+        shell: pwsh
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          Get-Location
+          echo ${env:PATH}
+          echo ${{ secrets.GITHUB_TOKEN }}
+          echo $env:INTERNAL_VARIABLE
+          echo ${env:buildConfiguration}
+          echo ${{ steps.extract_branch.outputs.branch }}
+          echo ${{github.actor}}
+          echo https://github.com/${{github.repository}}/workflows/${{github.workflow}}/badge.svg
+          echo 1-${env:buildNumber}
+          echo 2-$env:buildNumber
+          echo 3-${buildNumber}
+          echo 4-$buildNumber
+          echo "This workflow run is triggered by ${{ github.event_name }} ."
+          echo "*****************************************************************************"
+          echo "$env:GITHUB_CONTEXT"
+          echo "*****************************************************************************"
