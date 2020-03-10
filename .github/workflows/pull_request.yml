@@ -30,7 +30,6 @@ jobs:
           echo ${{ secrets.GITHUB_TOKEN }}
           echo $env:INTERNAL_VARIABLE
           echo ${env:buildConfiguration}
-          echo ${{ steps.extract_branch.outputs.branch }}
           echo ${{github.actor}}
           echo https://github.com/${{github.repository}}/workflows/${{github.workflow}}/badge.svg
           echo 1-${env:buildNumber}
