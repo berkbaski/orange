@@ -4,27 +4,13 @@ jobs:
   dotnet-format:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract branch name
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-
-      - name: Set the build number
-        run: echo ::set-env name=buildNumber::$buildNumber.${GITHUB_RUN_NUMBER}
-
       - name: Format
         run: |
-          echo ${env:PATH}
           echo "::set-env name=PATH::${PATH}:${HOME}/.dotnet/tools"
           dotnet tool install -g dotnet-format
 
       - name: Checkout repo
         uses: actions/checkout@v2
-
-      - name: Add dotnet-format problem matcher
-        uses: xt0rted/dotnet-format-problem-matcher@v1
-
-      - name: Restore dotnet tools
-        uses: xt0rted/dotnet-tool-restore@v1
 
       - name: Run dotnet format
         uses: xt0rted/dotnet-format@v1
@@ -38,19 +24,4 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
-          Get-Location
           echo ${env:PATH}
-          echo ${{ secrets.GITHUB_TOKEN }}
-          echo $env:INTERNAL_VARIABLE
-          echo ${env:buildConfiguration}
-          echo ${{ steps.extract_branch.outputs.branch }}
-          echo ${{github.actor}}
-          echo https://github.com/${{github.repository}}/workflows/${{github.workflow}}/badge.svg
-          echo 1-${env:buildNumber}
-          echo 2-$env:buildNumber
-          echo 3-${buildNumber}
-          echo 4-$buildNumber
-          echo "This workflow run is triggered by ${{ github.event_name }} ."
-          echo "*****************************************************************************"
-          echo "$env:GITHUB_CONTEXT"
-          echo "*****************************************************************************"
