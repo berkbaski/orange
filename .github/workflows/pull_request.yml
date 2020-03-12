@@ -17,12 +17,6 @@ jobs:
       # - name: Add dotnet-format problem matcher
       #   uses: xt0rted/dotnet-format-problem-matcher@v1
 
-      # - name: Run dotnet format
-      #   uses: xt0rted/dotnet-format@v1
-      #   with:
-      #     repo-token: ${{ secrets.GITHUB_TOKEN }}
-      #     only-changed-files: "true"
-
       - name: Run dotnet format
         id: format
         uses: xt0rted/dotnet-format@v1
