@@ -2,8 +2,7 @@
 
 namespace Orange.Primitives
 {
-    public static class EnvironmentHelper
-    {
+    public static class EnvironmentHelper {
 		private const string EnvironmentVariable = "ENVIRONMENT";
         private const string EnvironmentAspNetCore = "ASPNETCORE_ENVIRONMENT";
 		private const string EnvironmentAspNetCoreUrls = "ASPNETCORE_URLS";
