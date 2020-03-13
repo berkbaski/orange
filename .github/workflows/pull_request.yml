@@ -17,6 +17,7 @@ jobs:
 
       # - name: Add dotnet-format problem matcher
       #   uses: xt0rted/dotnet-format-problem-matcher@v1
+      #   temp
 
       - name: Run dotnet format
         id: format
