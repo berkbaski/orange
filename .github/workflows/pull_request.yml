@@ -4,40 +4,42 @@ jobs:
   dotnet-format:
     runs-on: ubuntu-latest
     steps:
+      - name: Format
+        run: |
+          git config --global core.autocrlf true
+          echo "::set-env name=PATH::${PATH}:${HOME}/.dotnet/tools"
+          dotnet tool install -g dotnet-format
+
       - name: Checkout repo
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Add dotnet-format problem matcher
-        uses: xt0rted/dotnet-format-problem-matcher@v1
-
-      - name: Restore dotnet tools
-        uses: xt0rted/dotnet-tool-restore@v1
+      # - name: Add dotnet-format problem matcher
+      #   uses: xt0rted/dotnet-format-problem-matcher@v1
+      #   temp
 
       - name: Run dotnet format
+        id: format
         uses: xt0rted/dotnet-format@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          only-changed-files: "true"
+          only-changed-files: true
+          action: "fix"
 
-      - name: Debug details
-        if: failure()
-        shell: pwsh
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+      - name: Commit files
+        if: steps.format.outputs.has-changes == 'true'
         run: |
-          Get-Location
-          echo ${env:PATH}
-          echo ${{ secrets.GITHUB_TOKEN }}
-          echo $env:INTERNAL_VARIABLE
-          echo ${env:buildConfiguration}
-          echo ${{ steps.extract_branch.outputs.branch }}
-          echo ${{github.actor}}
-          echo https://github.com/${{github.repository}}/workflows/${{github.workflow}}/badge.svg
-          echo 1-${env:buildNumber}
-          echo 2-$env:buildNumber
-          echo 3-${buildNumber}
-          echo 4-$buildNumber
-          echo "This workflow run is triggered by ${{ github.event_name }} ."
-          echo "*****************************************************************************"
-          echo "$env:GITHUB_CONTEXT"
-          echo "*****************************************************************************"
+          echo ${{ steps.format.outputs.has-changes }}
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -a -m 'Automated dotnet-format update
+
+          Co-authored-by: ${{ github.event.pull_request.user.login }} <${{ github.event.pull_request.user.id }}+${{ github.event.pull_request.user.login }}@users.noreply.github.com>'
+
+      - name: Push changes
+        if: steps.format.outputs.has-changes == 'true'
+        uses: ad-m/github-push-action@v0.5.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
