@@ -7,7 +7,6 @@ jobs:
       - name: Format
         run: |
           git config --global core.autocrlf true
-          echo "::set-env name=PATH::${PATH}:${HOME}/.dotnet/tools"
           dotnet tool install -g dotnet-format
 
       - name: Checkout repo
